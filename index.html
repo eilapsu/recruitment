@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบรับสมัครงาน - นักพัฒนาซอฟต์แวร์ (จ้างเหมาบริการ)</title>
+    <!-- นำเข้า Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- นำเข้าฟอนต์ภาษาไทย Anuphan จาก Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- นำเข้า Font Awesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Anuphan', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- แถบนำทางด้านบน (Navbar) -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('applicant')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-code text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-900 text-base sm:text-lg block leading-tight">E-Recruitment</span>
+                    <span class="text-xs text-slate-500 block">ระบบรับสมัครงานออนไลน์</span>
+                </div>
+            </div>
+            
+            <div id="nav-actions">
+                <button id="btn-open-admin" onclick="openAdminLoginModal()" class="text-xs sm:text-sm font-medium text-slate-600 hover:text-primary-600 bg-slate-100 hover:bg-primary-50 px-3 py-2 rounded-lg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>สำหรับเจ้าหน้าที่ (Admin)</span>
+                </button>
+                <button id="btn-back-applicant" onclick="switchView('applicant')" class="hidden text-xs sm:text-sm font-medium text-primary-600 hover:text-primary-700 bg-primary-50 hover:bg-primary-100 px-3 py-2 rounded-lg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>กลับหน้าสมัครงาน</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- พื้นที่เนื้อหาหลัก -->
+    <main class="flex-grow">
+        
+        <!-- ========================================== -->
+        <!-- ส่วนที่ 1: หน้าสำหรับผู้สมัคร (Applicant Portal) -->
+        <!-- ========================================== -->
+        <div id="applicant-view" class="pb-16">
+            <!-- Hero Section -->
+            <div class="bg-gradient-to-r from-primary-700 via-primary-600 to-sky-500 text-white py-12 sm:py-16 px-4 shadow-inner relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none">
+                    <svg class="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+                    </svg>
+                </div>
+
+                <div class="max-w-3xl mx-auto text-center relative z-10">
+                    <span class="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs sm:text-sm font-medium mb-4 border border-white/30">
+                        <i class="fa-solid fa-bullhorn mr-1.5"></i> เปิดรับสมัครด่วน
+                    </span>
+                    <h1 class="text-2xl sm:text-4xl font-bold tracking-tight mb-3 leading-snug">
+                        รับสมัครนักพัฒนาซอฟต์แวร์<br class="sm:hidden"> (จ้างเหมาบริการ)
+                    </h1>
+                    <p class="text-primary-100 text-sm sm:text-base max-w-2xl mx-auto font-light mb-6">
+                        กรุณากรอกข้อมูลและแนบเอกสารประกอบการสมัครให้ครบถ้วนสมบูรณ์
+                    </p>
+                    <!-- ปุ่มเปิดไฟล์ PDF รายละเอียดประกาศ (อย่าลืมเปลี่ยนลิงก์ href เป็นลิงก์ไฟล์ประกาศของคุณ) -->
+                    <div class="flex justify-center">
+                        <a id="announcement-link" href="https://eilapsu.short.gy/softdev-info" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex items-center gap-2.5 bg-white text-primary-700 hover:bg-primary-50 font-semibold text-sm sm:text-base px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all">
+                            <i class="fa-solid fa-file-pdf text-rose-500 text-lg"></i>
+                            <span>รายละเอียดประกาศ</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-70"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- แบบฟอร์มสมัครงานออนไลน์ -->
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 -mt-6 relative z-20">
+                <form id="application-form" novalidate class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 space-y-8">
+                    
+                    <!-- หมวดที่ 1: ข้อมูลผู้สมัคร -->
+                    <div>
+                        <div class="flex items-center gap-3 pb-3 border-b border-slate-100 mb-5">
+                            <div class="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center font-bold text-sm">1</div>
+                            <h2 class="text-lg sm:text-xl font-semibold text-slate-800">ข้อมูลผู้สมัคร</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5">
+                            <div>
+                                <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1.5">
+                                    ชื่อ-นามสกุล (Full Name) <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i class="fa-regular fa-user"></i>
+                                    </div>
+                                    <input type="text" id="fullName" name="fullName" required placeholder="เช่น นายสมชาย ใจดี"
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none">
+                                </div>
+                                <p id="error-fullName" class="hidden text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation"></i> กรุณากรอกชื่อ-นามสกุล
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">
+                                        อีเมล (Email Address) <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                            <i class="fa-regular fa-envelope"></i>
+                                        </div>
+                                        <input type="email" id="email" name="email" required placeholder="example@email.com"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none">
+                                    </div>
+                                    <p id="error-email" class="hidden text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation"></i> กรุณากรอกรูปแบบอีเมลให้ถูกต้อง
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-slate-700 mb-1.5">
+                                        เบอร์โทรศัพท์มือถือ (10 หลัก) <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                            <i class="fa-solid fa-mobile-screen-button"></i>
+                                        </div>
+                                        <input type="tel" id="phone" name="phone" required maxlength="10" placeholder="08XXXXXXXX"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none">
+                                    </div>
+                                    <p id="error-phone" class="hidden text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation"></i> กรุณากรอกเบอร์โทรศัพท์มือถือเป็นตัวเลข 10 หลัก
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- หมวดที่ 2: ส่วนอัปโหลดเอกสาร -->
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center font-bold text-sm">2</div>
+                                <h2 class="text-lg sm:text-xl font-semibold text-slate-800">อัปโหลดเอกสารประกอบการสมัคร</h2>
+                            </div>
+                            <span class="text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg">
+                                เฉพาะไฟล์ .PDF (ไม่เกิน 15 MB/ไฟล์)
+                            </span>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- ช่องที่ 1: Resume -->
+                            <div class="bg-slate-50/70 border border-slate-200 rounded-xl p-5">
+                                <label class="block text-base font-semibold text-slate-800 mb-1">
+                                    1. Resume พร้อมติดภาพถ่าย (ไฟล์ PDF) <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="bg-sky-50 border-l-4 border-primary-500 p-3 rounded-r-lg mb-4 text-xs sm:text-sm text-primary-900 flex items-start gap-2.5">
+                                    <i class="fa-solid fa-circle-info text-primary-600 mt-0.5"></i>
+                                    <span><strong>ข้อกำหนดสำคัญ:</strong> ต้องมีภาพถ่ายหน้าตรง ไม่สวมหมวก ไม่สวมแว่นตาดำ ถ่ายไม่เกิน 6 เดือน แนบอยู่ในไฟล์นี้</span>
+                                </div>
+
+                                <div id="dropzone-resume" class="relative border-2 border-dashed border-slate-300 hover:border-primary-400 bg-white rounded-xl p-6 text-center transition-colors cursor-pointer" onclick="document.getElementById('resumeFile').click()">
+                                    <input type="file" id="resumeFile" accept=".pdf,application/pdf" class="hidden" onchange="handleFileSelect(event, 'resume')">
+                                    
+                                    <div id="resume-placeholder">
+                                        <div class="w-12 h-12 rounded-full bg-primary-50 text-primary-500 flex items-center justify-center mx-auto mb-3 text-xl">
+                                            <i class="fa-solid fa-file-pdf"></i>
+                                        </div>
+                                        <p class="text-sm font-medium text-slate-700">คลิกเพื่อเลือกไฟล์ Resume (.pdf)</p>
+                                        <p class="text-xs text-slate-400 mt-1">ขนาดไฟล์สูงสุดไม่เกิน 15 MB</p>
+                                    </div>
+
+                                    <div id="resume-selected" class="hidden flex items-center justify-between bg-primary-50/60 border border-primary-200 rounded-lg p-3 text-left" onclick="event.stopPropagation()">
+                                        <div class="flex items-center gap-3 overflow-hidden">
+                                            <i class="fa-solid fa-file-pdf text-rose-500 text-2xl shrink-0"></i>
+                                            <div class="truncate">
+                                                <p id="resume-filename" class="text-sm font-medium text-slate-800 truncate">resume.pdf</p>
+                                                <p id="resume-filesize" class="text-xs text-slate-500">2.4 MB</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="removeFile('resume')" class="text-slate-400 hover:text-rose-500 p-2 rounded-lg transition-colors" title="ลบไฟล์">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p id="error-resumeFile" class="hidden text-xs text-rose-500 mt-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation"></i> <span id="error-resumeFile-text">กรุณาอัปโหลดไฟล์ Resume (.pdf)</span>
+                                </p>
+                            </div>
+
+                            <!-- ช่องที่ 2: เอกสารรวม -->
+                            <div class="bg-slate-50/70 border border-slate-200 rounded-xl p-5">
+                                <label class="block text-base font-semibold text-slate-800 mb-1">
+                                    2. เอกสารและหลักฐานประกอบการสมัคร (รวมเป็นไฟล์ PDF เดียว) <span class="text-rose-500">*</span>
+                                </label>
+                                <p class="text-xs sm:text-sm text-slate-600 mb-2">
+                                    กรุณาตรวจสอบรายการเอกสารด้านล่างให้ครบถ้วนและรวมสแกนเป็นไฟล์ PDF เดียวกันก่อนอัปโหลด (คลิกที่รายการเพื่อเช็คความครบถ้วน):
+                                </p>
+                                <!-- ข้อความหมายเหตุสีแดงเน้นย้ำ -->
+                                <div class="bg-rose-50 border border-rose-200 text-rose-600 font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-exclamation shrink-0"></i>
+                                    <span>หมายเหตุ: เอกสารทุกรายการพร้อมรับรองสำเนาถูกต้อง</span>
+                                </div>
+
+                                <div class="bg-white border border-slate-200 rounded-xl p-4 mb-4 space-y-2.5 text-xs sm:text-sm">
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">สำเนาใบปริญญา (1 ฉบับ)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">สำเนาใบประมวลผลการศึกษา / Transcript (1 ฉบับ)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">สำเนาบัตรประจำตัวประชาชน (1 ฉบับ)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">สำเนาทะเบียนบ้าน (1 ฉบับ)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">ใบรับรองแพทย์จากสถานพยาบาลของรัฐ ออกให้ไม่เกิน 1 เดือน (1 ฉบับ)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">หลักฐานการชำระเงินกู้ยืม กยศ./กรอ. (กรณีเคยกู้ยืม)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">สำเนาหนังสือสำคัญแบบ สด.8 หรือใบรับรองการผ่าน/ยกเว้นการเกณฑ์ทหาร (เพศชาย)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2.5 cursor-pointer group">
+                                        <input type="checkbox" class="doc-check mt-1 w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                                        <span class="text-slate-700 group-hover:text-slate-900">หลักฐานอื่นๆ (ถ้ามี เช่น ใบเปลี่ยนชื่อ-สกุล, ใบรับรองการทำงาน ฯลฯ)</span>
+                                    </label>
+                                </div>
+
+                                <div id="dropzone-docs" class="relative border-2 border-dashed border-slate-300 hover:border-primary-400 bg-white rounded-xl p-6 text-center transition-colors cursor-pointer" onclick="document.getElementById('docsFile').click()">
+                                    <input type="file" id="docsFile" accept=".pdf,application/pdf" class="hidden" onchange="handleFileSelect(event, 'docs')">
+                                    
+                                    <div id="docs-placeholder">
+                                        <div class="w-12 h-12 rounded-full bg-primary-50 text-primary-500 flex items-center justify-center mx-auto mb-3 text-xl">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                        </div>
+                                        <p class="text-sm font-medium text-slate-700">คลิกเพื่อเลือกไฟล์เอกสารและหลักฐานรวม (.pdf)</p>
+                                        <p class="text-xs text-slate-400 mt-1">ขนาดไฟล์สูงสุดไม่เกิน 15 MB</p>
+                                    </div>
+
+                                    <div id="docs-selected" class="hidden flex items-center justify-between bg-primary-50/60 border border-primary-200 rounded-lg p-3 text-left" onclick="event.stopPropagation()">
+                                        <div class="flex items-center gap-3 overflow-hidden">
+                                            <i class="fa-solid fa-file-pdf text-rose-500 text-2xl shrink-0"></i>
+                                            <div class="truncate">
+                                                <p id="docs-filename" class="text-sm font-medium text-slate-800 truncate">documents.pdf</p>
+                                                <p id="docs-filesize" class="text-xs text-slate-500">8.1 MB</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="removeFile('docs')" class="text-slate-400 hover:text-rose-500 p-2 rounded-lg transition-colors" title="ลบไฟล์">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p id="error-docsFile" class="hidden text-xs text-rose-500 mt-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation"></i> <span id="error-docsFile-text">กรุณาอัปโหลดไฟล์เอกสารและหลักฐานประกอบการสมัคร (.pdf)</span>
+                                </p>
+                            </div>
+
+                            <!-- ช่องที่ 3: ลิงก์ผลงานเพิ่มเติม (Optional) -->
+                            <div class="bg-slate-50/70 border border-slate-200 rounded-xl p-5">
+                                <label for="portfolioUrl" class="block text-base font-semibold text-slate-800 mb-1">
+                                    3. ลิงก์ผลงานหรือแฟ้มสะสมผลงานเพิ่มเติม <span class="text-xs font-normal text-slate-500">(ถ้ามี / ไม่บังคับ)</span>
+                                </label>
+                                <p class="text-xs sm:text-sm text-slate-600 mb-3">
+                                    สามารถแนบลิงก์ Google Drive โฟลเดอร์ผลงาน, GitHub, เว็บไซต์ หรือระบบที่เคยพัฒนา (กรุณาเปิดสิทธิ์การเข้าถึงลิงก์ให้สามารถเปิดดูได้)
+                                </p>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i class="fa-solid fa-link"></i>
+                                    </div>
+                                    <input type="url" id="portfolioUrl" name="portfolioUrl" placeholder="https://drive.google.com/... หรือ https://github.com/..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none text-sm">
+                                </div>
+                                <p id="error-portfolioUrl" class="hidden text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation"></i> กรุณากรอกรูปแบบลิงก์ให้ถูกต้อง (ขึ้นต้นด้วย http:// หรือ https://)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar ขณะกำลังอัปโหลด -->
+                    <div id="upload-progress-container" class="hidden bg-primary-50 border border-primary-200 rounded-xl p-4 space-y-2">
+                        <div class="flex justify-between items-center text-sm font-medium text-primary-800">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-notch fa-spin text-primary-600"></i>
+                                <span id="upload-status-text">กำลังอัปโหลดเอกสารและบันทึกข้อมูล...</span>
+                            </span>
+                            <span id="upload-percent">0%</span>
+                        </div>
+                        <div class="w-full bg-primary-200 rounded-full h-2.5 overflow-hidden">
+                            <div id="upload-progress-bar" class="bg-primary-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p class="text-xs text-primary-600">ระบบกำลังส่งไฟล์ไปยัง Google Drive กรุณาอย่าปิดหน้าต่างนี้</p>
+                    </div>
+
+                    <!-- ปุ่มส่งใบสมัคร -->
+                    <div class="pt-2">
+                        <button type="submit" id="btn-submit-app" class="w-full py-3.5 px-6 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-base disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>ส่งใบสมัครงาน</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ส่วนที่ 2: หน้าสำหรับเจ้าหน้าที่ (Admin Dashboard) -->
+        <!-- ========================================== -->
+        <div id="admin-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            
+            <!-- ส่วนหัว Admin และปุ่ม Export -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-md bg-primary-100 text-primary-700 text-xs font-semibold">Admin Portal</span>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900">ระบบจัดการข้อมูลผู้สมัครงาน</h1>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-1">ตำแหน่ง: นักพัฒนาซอฟต์แวร์ (จ้างเหมาบริการ)</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="fetchApplicantsFromCloud()" class="bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-medium px-3.5 py-2.5 rounded-xl transition-colors flex items-center gap-2" title="รีเฟรชข้อมูลล่าสุด">
+                        <i id="refresh-icon" class="fa-solid fa-rotate-right"></i>
+                        <span class="hidden sm:inline">รีเฟรชข้อมูล</span>
+                    </button>
+                    <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv text-base"></i>
+                        <span>Export ข้อมูลเป็น CSV</span>
+                    </button>
+                    <button onclick="logoutAdmin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>ออกจากระบบ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- การ์ดสรุปสถิติและช่องค้นหา -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500 font-medium">จำนวนผู้สมัครทั้งหมด</p>
+                        <p class="text-2xl font-bold text-slate-900"><span id="total-applicants-count">0</span> <span class="text-sm font-normal text-slate-500">คน</span></p>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-center">
+                    <label for="admin-search" class="text-xs font-medium text-slate-500 mb-1.5">ค้นหารายชื่อผู้สมัคร</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <input type="text" id="admin-search" oninput="renderApplicantsTable()" placeholder="พิมพ์ชื่อ-นามสกุล, เบอร์โทรศัพท์ หรือรหัสอ้างอิง..."
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ตารางรายชื่อผู้สมัคร -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                                <th class="py-3.5 px-4">วันที่สมัคร</th>
+                                <th class="py-3.5 px-4">รหัสอ้างอิง</th>
+                                <th class="py-3.5 px-4">ชื่อ-นามสกุล</th>
+                                <th class="py-3.5 px-4">ข้อมูลติดต่อ</th>
+                                <th class="py-3.5 px-4 text-center">เอกสารบน Google Drive & ผลงาน</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicants-table-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- แถวข้อมูลจะถูกสร้างด้วย JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- สถานะกำลังโหลดข้อมูล -->
+                <div id="loading-table-state" class="hidden py-12 text-center px-4">
+                    <i class="fa-solid fa-circle-notch fa-spin text-primary-600 text-3xl mb-3"></i>
+                    <p class="text-slate-600 font-medium">กำลังดึงข้อมูลจาก Google Sheets...</p>
+                </div>
+
+                <!-- กรณีไม่มีข้อมูล -->
+                <div id="empty-table-state" class="hidden py-12 text-center px-4">
+                    <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-2xl">
+                        <i class="fa-regular fa-folder-open"></i>
+                    </div>
+                    <p class="text-slate-600 font-medium">ไม่พบข้อมูลผู้สมัคร</p>
+                    <p class="text-xs text-slate-400 mt-1">ยังไม่มีผู้ส่งใบสมัคร หรือไม่พบข้อมูลที่ตรงกับคำค้นหา</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-500">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>&copy; 2026 ระบบรับสมัครงานออนไลน์ ตำแหน่งนักพัฒนาซอฟต์แวร์ (จ้างเหมาบริการ)</p>
+            <button onclick="openAdminLoginModal()" class="text-slate-400 hover:text-primary-600 transition-colors underline">
+                สำหรับเจ้าหน้าที่ดูแลระบบ
+            </button>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="alert-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl animate-fade-in text-center">
+            <div id="alert-icon" class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="alert-title" class="text-lg font-bold text-slate-900 mb-2">แจ้งเตือน</h3>
+            <p id="alert-message" class="text-sm text-slate-600 mb-6">ข้อความแจ้งเตือน</p>
+            <button onclick="closeAlertModal()" class="w-full py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors">
+                ตกลง
+            </button>
+        </div>
+    </div>
+
+    <div id="success-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-fade-in">
+            <div class="text-center">
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">ส่งใบสมัครสำเร็จ!</h3>
+                <p class="text-sm text-slate-500 mb-5">ระบบได้บันทึกข้อมูลและเอกสารลงฐานข้อมูลเรียบร้อยแล้ว</p>
+            </div>
+
+            <div class="bg-primary-50 border border-primary-200 rounded-xl p-4 text-center mb-5">
+                <span class="text-xs font-medium text-primary-700 block mb-1">รหัสอ้างอิงการสมัคร (Reference ID)</span>
+                <div class="flex items-center justify-center gap-2">
+                    <span id="success-ref-id" class="text-xl font-bold text-primary-900 tracking-wider">DEV-2026-XXXX</span>
+                    <button onclick="copyRefId()" class="text-primary-600 hover:text-primary-800 p-1.5 rounded-lg hover:bg-primary-100 transition-colors" title="คัดลอกรหัสอ้างอิง">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+                <span id="copy-feedback" class="hidden text-xs text-emerald-600 font-medium mt-1 block">คัดลอกรหัสแล้ว!</span>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4 space-y-2.5 text-sm border border-slate-100 mb-6">
+                <div class="flex justify-between">
+                    <span class="text-slate-500">ชื่อ-นามสกุล:</span>
+                    <span id="summary-name" class="font-medium text-slate-800 text-right">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">อีเมล:</span>
+                    <span id="summary-email" class="font-medium text-slate-800 text-right">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">เบอร์โทรศัพท์:</span>
+                    <span id="summary-phone" class="font-medium text-slate-800 text-right">-</span>
+                </div>
+                <div class="border-t border-slate-200 pt-2 mt-2 space-y-1.5">
+                    <div class="flex items-center gap-2 text-xs text-emerald-700">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <span id="summary-resume" class="truncate">Resume.pdf</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-emerald-700">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <span id="summary-docs" class="truncate">Documents.pdf</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeSuccessModal()" class="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-md transition-colors">
+                เสร็จสิ้น
+            </button>
+        </div>
+    </div>
+
+    <div id="admin-login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">เข้าสู่ระบบเจ้าหน้าที่</h3>
+                </div>
+                <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label for="admin-password" class="block text-sm font-medium text-slate-700 mb-1.5">รหัสผ่านเข้าใช้งาน</label>
+                    <input type="password" id="admin-password" required placeholder="กรอกรหัสผ่านเจ้าหน้าที่"
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                    <p id="admin-login-error" class="hidden text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+                    </p>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeAdminLoginModal()" class="w-1/2 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="w-1/2 py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-sm transition-colors">
+                        เข้าสู่ระบบ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // ==========================================
+        // 1. ตั้งค่าระบบ (นำ Web App URL ที่ Deploy จาก Apps Script มาวางที่นี่)
+        // ==========================================
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzb3E5twKz1q9hkohRyJfWirHuqETZ6nkH4Qy9nZuIb80h47iHD5VXVMkbkwGBcyGpEoQ/exec';
+        const ADMIN_PASS = 'eiladev0258';
+        const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
+        
+        let selectedFiles = { resume: null, docs: null };
+        let applicantsData = [];
+
+        // ฟังก์ชันแปลงไฟล์เป็น Base64 เพื่อส่งไปยัง Apps Script
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // ดึงข้อมูลผู้สมัครจาก Google Sheets ผ่าน API
+        async function fetchApplicantsFromCloud() {
+            const loadingState = document.getElementById('loading-table-state');
+            const emptyState = document.getElementById('empty-table-state');
+            const tbody = document.getElementById('applicants-table-body');
+            const refreshIcon = document.getElementById('refresh-icon');
+
+            if (GAS_WEB_APP_URL.includes('วาง_WEB_APP_URL')) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            tbody.innerHTML = '';
+            emptyState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            refreshIcon.classList.add('fa-spin');
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL);
+                const data = await response.json();
+                applicantsData = Array.isArray(data) ? data : [];
+                renderApplicantsTable();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showAlert('ดึงข้อมูลไม่สำเร็จ', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาตรวจสอบ Web App URL');
+            } finally {
+                loadingState.classList.add('hidden');
+                refreshIcon.classList.remove('fa-spin');
+            }
+        }
+
+        // ==========================================
+        // 2. การจัดการอัปโหลดไฟล์และตรวจสอบความถูกต้อง
+        // ==========================================
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function handleFileSelect(event, type) {
+            const file = event.target.files[0];
+            const errorEl = document.getElementById(`error-${type}File`);
+            errorEl.classList.add('hidden');
+
+            if (!file) return;
+
+            const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            if (!isPdf) {
+                event.target.value = '';
+                showAlert('รูปแบบไฟล์ไม่ถูกต้อง', 'กรุณาอัปโหลดเฉพาะไฟล์นามสกุล .pdf เท่านั้น');
+                return;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                event.target.value = '';
+                showAlert('ขนาดไฟล์เกินกำหนด', `ไฟล์ "${file.name}" มีขนาด ${formatBytes(file.size)} ซึ่งเกินขีดจำกัดสูงสุด 15 MB ต่อไฟล์`);
+                return;
+            }
+
+            selectedFiles[type] = file;
+            document.getElementById(`${type}-placeholder`).classList.add('hidden');
+            document.getElementById(`${type}-selected`).classList.remove('hidden');
+            document.getElementById(`${type}-filename`).textContent = file.name;
+            document.getElementById(`${type}-filesize`).textContent = formatBytes(file.size);
+            document.getElementById(`dropzone-${type}`).classList.add('border-primary-400', 'bg-primary-50/20');
+        }
+
+        function removeFile(type) {
+            selectedFiles[type] = null;
+            document.getElementById(`${type}File`).value = '';
+            document.getElementById(`${type}-selected`).classList.add('hidden');
+            document.getElementById(`${type}-placeholder`).classList.remove('hidden');
+            document.getElementById(`dropzone-${type}`).classList.remove('border-primary-400', 'bg-primary-50/20');
+        }
+
+        ['resume', 'docs'].forEach(type => {
+            const dropzone = document.getElementById(`dropzone-${type}`);
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('border-primary-500', 'bg-primary-50');
+            });
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('border-primary-500', 'bg-primary-50');
+            });
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('border-primary-500', 'bg-primary-50');
+                if (e.dataTransfer.files.length > 0) {
+                    const fileInput = document.getElementById(`${type}File`);
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect({ target: fileInput }, type);
+                }
+            });
+        });
+
+        // ==========================================
+        // 3. การส่งใบสมัครไปยัง Google Apps Script โดยตรง
+        // ==========================================
+        document.getElementById('application-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            let isValid = true;
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const portfolioUrl = document.getElementById('portfolioUrl').value.trim();
+
+            ['fullName', 'email', 'phone', 'resumeFile', 'docsFile', 'portfolioUrl'].forEach(id => {
+                document.getElementById(`error-${id}`).classList.add('hidden');
+            });
+
+            if (!fullName) { document.getElementById('error-fullName').classList.remove('hidden'); isValid = false; }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) { document.getElementById('error-email').classList.remove('hidden'); isValid = false; }
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phone || !phoneRegex.test(phone)) { document.getElementById('error-phone').classList.remove('hidden'); isValid = false; }
+            if (!selectedFiles.resume) { document.getElementById('error-resumeFile').classList.remove('hidden'); isValid = false; }
+            if (!selectedFiles.docs) { document.getElementById('error-docsFile').classList.remove('hidden'); isValid = false; }
+            if (portfolioUrl && !/^https?:\/\/.+/i.test(portfolioUrl)) {
+                document.getElementById('error-portfolioUrl').classList.remove('hidden');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                showAlert('ข้อมูลไม่ครบถ้วน', 'กรุณาตรวจสอบและกรอกข้อมูลที่มีเครื่องหมาย * รวมถึงแนบไฟล์ให้ครบถ้วน');
+                return;
+            }
+
+            const submitBtn = document.getElementById('btn-submit-app');
+            const progressContainer = document.getElementById('upload-progress-container');
+            const progressBar = document.getElementById('upload-progress-bar');
+            const progressPercent = document.getElementById('upload-percent');
+            const statusText = document.getElementById('upload-status-text');
+
+            submitBtn.disabled = true;
+            progressContainer.classList.remove('hidden');
+            progressBar.style.width = '20%';
+            progressPercent.textContent = '20%';
+            statusText.textContent = 'กำลังเตรียมไฟล์เอกสาร PDF...';
+
+            try {
+                const resumeBase64 = await fileToBase64(selectedFiles.resume);
+                progressBar.style.width = '45%';
+                progressPercent.textContent = '45%';
+
+                const docsBase64 = await fileToBase64(selectedFiles.docs);
+                progressBar.style.width = '70%';
+                progressPercent.textContent = '70%';
+                statusText.textContent = 'กำลังอัปโหลดไฟล์ไปยัง Google Drive...';
+
+                const randomNum = Math.floor(1000 + Math.random() * 9000);
+                const refId = `DEV-2026-${randomNum}`;
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('th-TH', {
+                    year: 'numeric', month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                }) + ' น.';
+
+                const payload = {
+                    id: refId,
+                    timestamp: now.getTime(),
+                    appliedDate: dateStr,
+                    fullName: fullName,
+                    email: email,
+                    phone: phone,
+                    portfolioUrl: portfolioUrl,
+                    resumeBase64: resumeBase64,
+                    docsBase64: docsBase64
+                };
+
+                if (GAS_WEB_APP_URL.includes('วาง_WEB_APP_URL')) {
+                    throw new Error('กรุณาใส่ Web App URL ของ Google Apps Script ในไฟล์ index.html ก่อนใช้งาน');
+                }
+
+                // ส่งข้อมูลแบบ POST (ใช้ text/plain เพื่อหลีกเลี่ยง CORS Preflight)
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    progressBar.style.width = '100%';
+                    progressPercent.textContent = '100%';
+                    statusText.textContent = 'บันทึกข้อมูลสำเร็จ!';
+
+                    setTimeout(() => {
+                        progressContainer.classList.add('hidden');
+                        progressBar.style.width = '0%';
+                        submitBtn.disabled = false;
+
+                        showSuccessModal({
+                            id: refId,
+                            fullName: fullName,
+                            email: email,
+                            phone: phone,
+                            resumeName: selectedFiles.resume.name,
+                            docsName: selectedFiles.docs.name
+                        });
+
+                        document.getElementById('application-form').reset();
+                        removeFile('resume');
+                        removeFile('docs');
+                    }, 400);
+                } else {
+                    throw new Error(result.message || 'ไม่สามารถบันทึกข้อมูลได้');
+                }
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                submitBtn.disabled = false;
+                progressContainer.classList.add('hidden');
+                showAlert('เกิดข้อผิดพลาดในการส่งข้อมูล', error.message);
+            }
+        });
+
+        // ==========================================
+        // 4. การจัดการ Modal และแจ้งเตือน
+        // ==========================================
+        function showAlert(title, message) {
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = message;
+            document.getElementById('alert-modal').classList.remove('hidden');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('alert-modal').classList.add('hidden');
+        }
+
+        function showSuccessModal(data) {
+            document.getElementById('success-ref-id').textContent = data.id;
+            document.getElementById('summary-name').textContent = data.fullName;
+            document.getElementById('summary-email').textContent = data.email;
+            document.getElementById('summary-phone').textContent = data.phone;
+            document.getElementById('summary-resume').textContent = data.resumeName;
+            document.getElementById('summary-docs').textContent = data.docsName;
+            document.getElementById('copy-feedback').classList.add('hidden');
+            document.getElementById('success-modal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        function copyRefId() {
+            const refText = document.getElementById('success-ref-id').textContent;
+            const tempInput = document.createElement('input');
+            tempInput.value = refText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            
+            const feedback = document.getElementById('copy-feedback');
+            feedback.classList.remove('hidden');
+            setTimeout(() => feedback.classList.add('hidden'), 2500);
+        }
+
+        // ==========================================
+        // 5. การสลับหน้าจอและระบบเจ้าหน้าที่ (Admin Dashboard)
+        // ==========================================
+        let isAdminLoggedIn = false;
+
+        function openAdminLoginModal() {
+            if (isAdminLoggedIn) {
+                switchView('admin');
+                return;
+            }
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-login-error').classList.add('hidden');
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('admin-password').focus(), 100);
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password').value;
+            if (pass === ADMIN_PASS) {
+                isAdminLoggedIn = true;
+                closeAdminLoginModal();
+                switchView('admin');
+            } else {
+                document.getElementById('admin-login-error').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            switchView('applicant');
+        }
+
+        function switchView(viewName) {
+            const applicantView = document.getElementById('applicant-view');
+            const adminView = document.getElementById('admin-view');
+            const btnOpenAdmin = document.getElementById('btn-open-admin');
+            const btnBackApplicant = document.getElementById('btn-back-applicant');
+
+            if (viewName === 'admin') {
+                applicantView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                btnOpenAdmin.classList.add('hidden');
+                btnBackApplicant.classList.remove('hidden');
+                fetchApplicantsFromCloud(); // ดึงข้อมูลล่าสุดจาก Google Sheets ทันทีที่เข้าหน้า Admin
+            } else {
+                adminView.classList.add('hidden');
+                applicantView.classList.remove('hidden');
+                btnBackApplicant.classList.add('hidden');
+                btnOpenAdmin.classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderApplicantsTable() {
+            const tbody = document.getElementById('applicants-table-body');
+            const emptyState = document.getElementById('empty-table-state');
+            const countEl = document.getElementById('total-applicants-count');
+            const searchQuery = document.getElementById('admin-search').value.toLowerCase().trim();
+
+            countEl.textContent = applicantsData.length;
+
+            const filtered = applicantsData.filter(app => {
+                return String(app.fullName).toLowerCase().includes(searchQuery) ||
+                       String(app.phone).includes(searchQuery) ||
+                       String(app.id).toLowerCase().includes(searchQuery);
+            });
+
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            filtered.forEach(app => {
+                const portfolioBtn = app.portfolioUrl 
+                    ? `<a href="${escapeHTML(String(app.portfolioUrl))}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap">
+                           <i class="fa-solid fa-link"></i> ลิงก์ผลงาน
+                       </a>`
+                    : '';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap text-xs sm:text-sm">
+                        ${escapeHTML(String(app.appliedDate))}
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-200">
+                            ${escapeHTML(String(app.id))}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-slate-900 whitespace-nowrap">
+                        ${escapeHTML(String(app.fullName))}
+                    </td>
+                    <td class="py-3.5 px-4 text-slate-600 text-xs sm:text-sm whitespace-nowrap">
+                        <div class="flex flex-col space-y-0.5">
+                            <span><i class="fa-regular fa-envelope text-slate-400 mr-1.5"></i>${escapeHTML(String(app.email))}</span>
+                            <span><i class="fa-solid fa-phone text-slate-400 mr-1.5"></i>${escapeHTML(String(app.phone))}</span>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="flex flex-nowrap items-center justify-center gap-1.5">
+                            <a href="${app.resumeUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-xs font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fa-brands fa-google-drive"></i> เปิดดู Resume
+                            </a>
+                            <a href="${app.docsUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fa-brands fa-google-drive"></i> เปิดดูหลักฐานรวม
+                            </a>
+                            ${portfolioBtn}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportToCSV() {
+            if (applicantsData.length === 0) {
+                showAlert('ไม่มีข้อมูล', 'ยังไม่มีข้อมูลผู้สมัครสำหรับส่งออกเป็นไฟล์ CSV');
+                return;
+            }
+
+            const headers = ['วันที่สมัคร', 'รหัสอ้างอิง (Reference ID)', 'ชื่อ-นามสกุล', 'อีเมล', 'เบอร์โทรศัพท์', 'ลิงก์ Resume (Google Drive)', 'ลิงก์เอกสารหลักฐานรวม (Google Drive)', 'ลิงก์ผลงานเพิ่มเติม'];
+            
+            const rows = applicantsData.map(app => [
+                `"${app.appliedDate}"`,
+                `"${app.id}"`,
+                `"${String(app.fullName).replace(/"/g, '""')}"`,
+                `"${app.email}"`,
+                `"${app.phone}"`,
+                `"${app.resumeUrl}"`,
+                `"${app.docsUrl}"`,
+                `"${app.portfolioUrl || '-'}"`
+            ]);
+
+            const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            const today = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `รายชื่อผู้สมัคร_นักพัฒนาซอฟต์แวร์_${today}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+    </script>
+</body>
+</html>
