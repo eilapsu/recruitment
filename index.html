@@ -572,7 +572,7 @@
         // ==========================================
         // 1. ตั้งค่าระบบ (นำ Web App URL ที่ Deploy จาก Apps Script มาวางที่นี่)
         // ==========================================
-        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzb3E5twKz1q9hkohRyJfWirHuqETZ6nkH4Qy9nZuIb80h47iHD5VXVMkbkwGBcyGpEoQ/exec';
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw8Kde4vCm-tbBeCY0L4OFWkKh7mla-xJrttRPPvKDIXQXSSIXh0MAIXICY-BbgpWiOPw/exec';
         const ADMIN_PASS = 'eiladev0258';
         const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
         
@@ -601,6 +601,7 @@
 
             if (GAS_WEB_APP_URL.includes('วาง_WEB_APP_URL')) {
                 emptyState.classList.remove('hidden');
+                showAlert('ยังไม่ได้ตั้งค่า URL', 'กรุณานำ Web App URL จาก Google Apps Script มาใส่ในโค้ดก่อนใช้งาน');
                 return;
             }
 
@@ -610,13 +611,30 @@
             refreshIcon.classList.add('fa-spin');
 
             try {
-                const response = await fetch(GAS_WEB_APP_URL);
-                const data = await response.json();
+                // เพิ่ม redirect: 'follow' และป้องกันการติด Cache ด้วย timestamp
+                const urlWithCacheBuster = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
+                const response = await fetch(urlWithCacheBuster, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                
+                const textResponse = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(textResponse);
+                } catch (e) {
+                    throw new Error('ข้อมูลที่ส่งกลับไม่ใช่ JSON (กรุณาตรวจสอบว่าได้กด Deploy > New version ใน Apps Script แล้ว และตั้งสิทธิ์เป็น Anyone)');
+                }
+
+                if (data && data.status === 'error') {
+                    throw new Error(data.message);
+                }
+
                 applicantsData = Array.isArray(data) ? data : [];
                 renderApplicantsTable();
             } catch (error) {
                 console.error('Error fetching data:', error);
-                showAlert('ดึงข้อมูลไม่สำเร็จ', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาตรวจสอบ Web App URL');
+                showAlert('ดึงข้อมูลไม่สำเร็จ', error.message);
             } finally {
                 loadingState.classList.add('hidden');
                 refreshIcon.classList.remove('fa-spin');
