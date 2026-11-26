@@ -580,6 +580,15 @@
         let applicantsData = [];
 
         // ฟังก์ชันแปลงไฟล์เป็น Base64 เพื่อส่งไปยัง Apps Script
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         // ดึงข้อมูลผู้สมัครจาก Google Sheets ผ่านเทคนิค JSONP (แก้ปัญหา CORS บน GitHub Pages 100%)
         function fetchApplicantsFromCloud() {
             const loadingState = document.getElementById('loading-table-state');
